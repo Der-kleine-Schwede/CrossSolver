@@ -1,0 +1,2 @@
+# CrossSolver
+Solves Crossword Riddles
