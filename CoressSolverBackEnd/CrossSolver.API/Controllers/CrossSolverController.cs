@@ -32,5 +32,10 @@ namespace CrossSolver.API.Controllers {
                 return StatusCode(500, "Error processing image");
             }
         }
+
+        [HttpGet(Name = "Get")]
+        public IActionResult Get() {
+            return Ok("Hallo Auss");
+        }
     }
 }
