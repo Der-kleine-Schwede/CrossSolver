@@ -1,0 +1,6 @@
+@CrossSolver.API_HostAddress = http://localhost:5150
+
+GET {{CrossSolver.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
