@@ -46,7 +46,10 @@ namespace CrossSolver.API.Controllers {
                         var perimeter = Cv2.ArcLength(contour, true);
                         var approx = Cv2.ApproxPolyDP(contour, 0.02 * perimeter, true);
 
-                        // Nur geschlossene Polygone mit 4 Punkten markieren
+                        // Alle Linien in Blau
+                        Cv2.Polylines(cvImage, new[] { approx }, true, new Scalar(255, 0, 0), 3);
+
+                        // Nur geschlossene Polygone in Grün
                         if (approx.Length == 4 && Cv2.IsContourConvex(approx)) {
                             // Zeichne die Kontur rot auf das Bild
                             Cv2.Polylines(cvImage, new[] { approx }, true, new Scalar(0, 255, 0), 3);
