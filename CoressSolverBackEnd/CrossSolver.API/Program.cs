@@ -11,6 +11,7 @@ namespace CrossSolver.API {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.WebHost.UseKestrel();
+            builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
             var app = builder.Build();
 
@@ -21,7 +22,6 @@ namespace CrossSolver.API {
             }
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
