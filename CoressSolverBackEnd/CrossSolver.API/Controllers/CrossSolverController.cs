@@ -41,19 +41,19 @@ namespace CrossSolver.API.Controllers {
                     // Finde Konturen
                     Cv2.FindContours(edges, out var contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
 
-                    // Suche nach einem Quadrat (4 Ecken)
+                    // Suche nach geschlossenen Polygonen (z. B. Quadrate)
                     foreach (var contour in contours) {
                         var perimeter = Cv2.ArcLength(contour, true);
                         var approx = Cv2.ApproxPolyDP(contour, 0.02 * perimeter, true);
 
-                        if (approx.Length == 4) // Quadrat gefunden
-                        {
+                        // Nur geschlossene Polygone mit 4 Punkten markieren
+                        if (approx.Length == 4 && Cv2.IsContourConvex(approx)) {
                             // Zeichne die Kontur rot auf das Bild
                             Cv2.Polylines(cvImage, new[] { approx }, true, new Scalar(0, 255, 0), 3);
                         }
                     }
 
-                    // Rückgabe des Bildes mit markierten Quadraten
+                    // Rückgabe des Bildes mit markierten geschlossenen Polygonen
                     return File(cvImage.ToBytes(".png"), "image/png");
                 }
             }
@@ -88,13 +88,12 @@ namespace CrossSolver.API.Controllers {
                     // Finde Konturen
                     Cv2.FindContours(edges, out var contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
 
-                    // Suche nach einem Quadrat (4 Ecken)
+                    // Suche nach geschlossenen Polygonen (z. B. Quadrate)
                     foreach (var contour in contours) {
                         var perimeter = Cv2.ArcLength(contour, true);
                         var approx = Cv2.ApproxPolyDP(contour, 0.02 * perimeter, true);
 
-                        if (approx.Length == 4) // Quadrat gefunden
-                        {
+                        if (approx.Length == 4 && Cv2.IsContourConvex(approx)) {
                             // Sortiere die Punkte im Uhrzeigersinn
                             var sortedPoints = SortPointsClockwise(approx);
 
@@ -120,7 +119,8 @@ namespace CrossSolver.API.Controllers {
                         }
                     }
 
-                    return BadRequest("No square detected");
+                    // Rückgabe des Bildes mit markierten geschlossenen Polygonen
+                    return File(cvImage.ToBytes(".png"), "image/png");
                 }
             }
             catch {
