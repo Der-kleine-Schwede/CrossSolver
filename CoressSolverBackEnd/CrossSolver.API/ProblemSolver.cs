@@ -1,8 +1,10 @@
 using System.Xml;
+using CrossSolver.API;
+using CrossSolver.API.Data;
 using HtmlAgilityPack;
 using static System.Net.WebRequestMethods;
 
-public static class ProblemSolver 
+public static partial class ProblemSolver 
 {
 
     static HtmlDocument GetDocument(string url) {
@@ -10,16 +12,6 @@ public static class ProblemSolver
         HtmlDocument doc = web.Load(url);
         return doc;
     }
-
-    class Answer {
-        public string question = "";
-        public string answer = "";
-
-        public Answer(string question, string answer) {
-            this.question = question;
-            this.answer = answer;
-        }
-    };
 
     //static DocumentNode Get
 
@@ -31,7 +23,7 @@ public static class ProblemSolver
     /// <param name="question">String von mindestens einem Wort</param>
     /// <param name="expectedLength">Erwartete Länge der Lösung</param>
     /// <returns></returns>
-    public static string Solve(string question, int expectedLength) 
+    public static string Solve(string question, int expectedLength, CrossSolverAPIContext context) 
     {
 
         string formatedQuestion = question.Trim();
@@ -56,7 +48,8 @@ public static class ProblemSolver
                 result += node.InnerHtml.ToString();
                 nodes.Add(node);
 
-                //ToDo: Lösungen in eine Datenbank eintragen
+                Answer answer = new("A", "B");
+                context.Answer.Add(answer);
             }
         }
         return result;

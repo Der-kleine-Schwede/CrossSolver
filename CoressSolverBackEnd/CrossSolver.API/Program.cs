@@ -1,8 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using CrossSolver.API.Data;
 
 namespace CrossSolver.API {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<CrossSolverAPIContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("CrossSolverAPIContext") ?? throw new InvalidOperationException("Connection string 'CrossSolverAPIContext' not found.")));
 
             // Add services to the container.
 
