@@ -29,16 +29,15 @@ public static partial class ProblemSolver
         }
     };
 
-    //static DocumentNode Get
-
     /// <summary>
     /// Sucht anhand der Parameter auf der Website www.kreuzwort-raetsel.net nach einer passenden Lösung
     /// ToDo: Diese Methode gibt derzeit noch eine Liste von Lösungen zurück. Hier muss eine einzige aus der Liste ausgewählt werden, die am besten passt.
     /// Außerdem sollten alle neuen Lösung in eine Datenbank eingetragen werden.
+    /// 
+    /// Siehe wiki zu dieser Klasse ProblemSolver für weitere Information.
     /// </summary>
     /// <param name="question">String von mindestens einem Wort</param>
     /// <param name="expectedLength">Erwartete Länge der Lösung</param>
-    /// <returns></returns>
     public static string Solve(string question, int expectedLength, CrossSolverAPIContext context) 
     {
 
@@ -52,16 +51,15 @@ public static partial class ProblemSolver
         HtmlDocument document = GetDocument(formatedURL);
         //Console.WriteLine(document.DocumentNode.OuterHtml);
 
+        /*problems ist eine Liste aller auf der Website gefundenen Fragen und dazugehöriger Antworten.*/
         List<Problem> problems = new List<Problem>();
 
-        List<HtmlNode> nodes = new List<HtmlNode>();
         string result = "";
 
         foreach (HtmlNode node in document.DocumentNode.Descendants()) {
 
             if (node.Name == "tr" && node.InnerHtml.ToString().Contains("href=\"frage")) {
                 //Hier muss eine Auswahl getroffen werden und nur die passenste Antwort zurückgegeben werden
-                result += node.InnerHtml.ToString();
                 foreach(HtmlNode questionNode in node.SelectNodes("//td")) 
                 {
 
@@ -78,16 +76,11 @@ public static partial class ProblemSolver
                         problems.Add(answerToAdd);
                     }
                 }
-                
-             
-                //nodes.Add(node);
-
                 //ToDo: Lösungen in eine Datenbank eintragen
             }
         }
 
-
-
+        //TODO: Hier muss das richtige Element aus List<Problem> problems ausgewählt und zurückgegeben werden; vorzugsweise anhand der expectedLength aus den Parametern.
         return result;
     }
 }
