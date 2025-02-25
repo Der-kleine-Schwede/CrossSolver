@@ -13,6 +13,22 @@ public static partial class ProblemSolver
         return doc;
     }
 
+    class Problem {
+        public string question = "";
+        public string answer = "";
+
+        public Problem(string question, string answer) {
+            this.question = question;
+            this.answer = answer;
+        }
+
+        public Problem() { }
+
+        public bool IsDefined() {
+            return question != "" && answer != "";
+        }
+    };
+
     //static DocumentNode Get
 
     /// <summary>
@@ -36,7 +52,7 @@ public static partial class ProblemSolver
         HtmlDocument document = GetDocument(formatedURL);
         //Console.WriteLine(document.DocumentNode.OuterHtml);
 
-        List<Answer> Answers = new List<Answer>();
+        List<Problem> problems = new List<Problem>();
 
         List<HtmlNode> nodes = new List<HtmlNode>();
         string result = "";
@@ -46,12 +62,32 @@ public static partial class ProblemSolver
             if (node.Name == "tr" && node.InnerHtml.ToString().Contains("href=\"frage")) {
                 //Hier muss eine Auswahl getroffen werden und nur die passenste Antwort zurückgegeben werden
                 result += node.InnerHtml.ToString();
-                nodes.Add(node);
+                foreach(HtmlNode questionNode in node.SelectNodes("//td")) 
+                {
 
-                Answer answer = new("A", "B");
-                context.Answer.Add(answer);
+                    Problem answerToAdd = new Problem();
+                    if (questionNode.Name == "td" && questionNode.Attributes["class"].ToString() == "Question") 
+                    {
+                        answerToAdd.question = questionNode.InnerText;
+                    }
+                    if (questionNode.Name == "td" && questionNode.Attributes["class"].ToString() == "Answer") {
+                        answerToAdd.answer = questionNode.InnerText;
+                    }
+
+                    if (answerToAdd.IsDefined()) { 
+                        problems.Add(answerToAdd);
+                    }
+                }
+                
+             
+                //nodes.Add(node);
+
+                //ToDo: Lösungen in eine Datenbank eintragen
             }
         }
+
+
+
         return result;
     }
 }
