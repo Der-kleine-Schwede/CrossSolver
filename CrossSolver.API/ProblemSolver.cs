@@ -6,13 +6,18 @@ using static System.Net.WebRequestMethods;
 
 public static partial class ProblemSolver 
 {
-
+    /// <summary>
+    /// Erstellt eine Webanfrage mit der übergebenenen URL und liefert die Website als HTML.
+    /// </summary>
     static HtmlDocument GetDocument(string url) {
         HtmlWeb web = new HtmlWeb();
         HtmlDocument doc = web.Load(url);
         return doc;
     }
 
+    /// <summary>
+    /// ToDo: Diese Klasse als Abstrakte Klasse umbauen und Methoden auslagern in eine abgeleitete Klasse
+    /// </summary>
     class Problem {
         public string question = "";
         public string answer = "";
@@ -24,6 +29,7 @@ public static partial class ProblemSolver
 
         public Problem() { }
 
+        /// <returns>True für: "Anfrage war erfolgreich; Zur Frage wurde eine Antwort der passenden Länge gefunden</returns>
         public bool IsDefined() {
             return question != "" && answer != "";
         }
@@ -31,17 +37,18 @@ public static partial class ProblemSolver
 
     /// <summary>
     /// Sucht anhand der Parameter auf der Website www.kreuzwort-raetsel.net nach einer passenden Lösung
-    /// ToDo: Diese Methode gibt derzeit noch eine Liste von Lösungen zurück. Hier muss eine einzige aus der Liste ausgewählt werden, die am besten passt.
+    /// ToDo: Diese Methode gibt derzeit noch eine Liste von Lösungen zurück. Hier muss eine einzige Lösung aus der Liste ausgewählt werden, die am besten passt.
     /// Außerdem sollten alle neuen Lösung in eine Datenbank eingetragen werden.
     /// 
     /// Siehe wiki zu dieser Klasse ProblemSolver für weitere Information.
     /// </summary>
     /// <param name="question">String von mindestens einem Wort</param>
     /// <param name="expectedLength">Erwartete Länge der Lösung</param>
-    public static string Solve(string question, int expectedLength, CrossSolverAPIContext context) 
+    public static string Solve(string question, int expectedLength) 
     {
 
         string formatedQuestion = question.Trim();
+        //Wird genau für diese URL formatiert; Muss für andere Websiten entsprechend angepasst werden.
         formatedQuestion = formatedQuestion.Replace(" ", "+");
 
         string AnswersSourceURL = $"https://www.kreuzwort-raetsel.net/suche.php?s={formatedQuestion}&field={expectedLength}&go=suchen";
@@ -56,10 +63,12 @@ public static partial class ProblemSolver
 
         string result = "";
 
+        //HTML Dokument parsen. ToDo: Sollte in eine Parse Html Klasse ausgelagert werden; nach folgender Signatur public Parse(String) liefert passendes HtmlDocument Unterklasse
+        //Eventuell gibt es dazu von HtmlDocument schon eine passende Methode
         foreach (HtmlNode node in document.DocumentNode.Descendants()) {
 
             if (node.Name == "tr" && node.InnerHtml.ToString().Contains("href=\"frage")) {
-                //Hier muss eine Auswahl getroffen werden und nur die passenste Antwort zurückgegeben werden
+                //Auf der Website werden mehrere Antworten angezeigt die zu der Frage passen könnten. Alle diese werden erstmal in der Liste problems hinzugefügt.
                 foreach(HtmlNode questionNode in node.SelectNodes("//td")) 
                 {
 
