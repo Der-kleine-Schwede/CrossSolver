@@ -1,13 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CrossSolver.API.Data;
+using Serilog;
 
 namespace CrossSolver.API {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile($"appsettings.json")
+                .AddJsonFile($"appsettings.Development.json")
+                .Build();
+            builder.Host.UseSerilog((context, configuration) =>
+                    configuration.ReadFrom.Configuration(context.Configuration));
             builder.Services.AddDbContext<CrossSolverAPIContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("CrossSolverAPIContext") ?? throw new InvalidOperationException("Connection string 'CrossSolverAPIContext' not found.")));
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("CrossSolverAPIContext") ?? throw new InvalidOperationException("Connection string 'CrossSolverAPIContext' not found.")));
 
             // Add services to the container.
 
